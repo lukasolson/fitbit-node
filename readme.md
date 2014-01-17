@@ -4,7 +4,7 @@ An API client library written for Fitbit in NodeJS.
 
 ## Usage
 1. `npm install fitbit-node`
-1. `var FitbitClient = require("fitbit-node");
+1. `var FitbitClient = require("fitbit-node");`
 
 ## API
 
