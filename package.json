@@ -21,7 +21,9 @@
 	},
 	"dependencies": {
 		"oauth": "~0.9.11",
-		"express": "~3.4.8",
 		"q": "~1.0.0"
+	},
+	"devDependencies": {
+		"express": "~3.4.8"
 	}
 }
