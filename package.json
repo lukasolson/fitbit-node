@@ -1,8 +1,8 @@
 {
 	"name": "fitbit-node",
-	"version": "0.0.3",
+	"version": "0.1.0",
 	"description": "A Fitbit API client library written in Node.js.",
-	"main": "fitbit-client.js",
+	"main": "fitbit-api-client.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},

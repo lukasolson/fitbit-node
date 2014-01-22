@@ -1,7 +1,7 @@
 var OAuth = require("oauth").OAuth,
 	Q = require("q");
 
-function FitbitClient(consumerKey, consumerSecret) {
+function FitbitApiClient(consumerKey, consumerSecret) {
 	this.oauth = new OAuth(
 		"https://api.fitbit.com/oauth/request_token",
 		"https://api.fitbit.com/oauth/access_token",
@@ -13,7 +13,7 @@ function FitbitClient(consumerKey, consumerSecret) {
 	);
 }
 
-FitbitClient.prototype = {
+FitbitApiClient.prototype = {
 	getRequestToken: function () {
 		var deferred = Q.defer();
 		this.oauth.getOAuthRequestToken(deferred.makeNodeResolver());
@@ -39,4 +39,4 @@ FitbitClient.prototype = {
 	}
 };
 
-module.exports = FitbitClient;
+module.exports = FitbitApiClient;

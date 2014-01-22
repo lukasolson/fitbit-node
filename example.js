@@ -1,31 +1,38 @@
 var express = require("express"),
 	app = express();
 
-var FitbitClient = require("./fitbit-client"),
-	client = new FitbitClient("4aa1a1175b514e6fb15c3f92d5cfaab3", "4ac101158b93458bae083b1b899c2293");
+var FitbitApiClient = require("./fitbit-api-client"),
+	client = new FitbitApiClient("YOUR_CONSUMER_KEY", "YOUR_CONSUMER_SECRET");
 
-var requestToken, requestTokenSecret;
+var requestTokenSecrets = {};
 
 app.get("/authorize", function (req, res) {
 	client.getRequestToken().then(function (results) {
-		requestToken = results[0];
-		requestTokenSecret = results[1];
-		res.redirect("http://www.fitbit.com/oauth/authorize?oauth_token=" + requestToken);
+		var token = results[0],
+			secret = results[1];
+		requestTokenSecrets[token] = secret;
+		res.redirect("http://www.fitbit.com/oauth/authorize?oauth_token=" + token);
+	}, function (error) {
+		console.log(error);
 	});
 });
 
-app.get("/authorize-callback", function (req, res) {
-	client.getAccessToken(requestToken, requestTokenSecret, req.query.oauth_verifier).then(function (results) {
+app.get("YOUR_CALLBACK_URL", function (req, res) {
+	var token = req.query.oauth_token,
+		secret = requestTokenSecrets[token],
+		verifier = req.query.oauth_verifier;
+	client.getAccessToken(token, secret, verifier).then(function (results) {
 		var accessToken = results[0],
 			accessTokenSecret = results[1],
 			userId = results[2].encoded_user_id;
-
 		client.requestResource("/profile.json", "GET", accessToken, accessTokenSecret).then(function (results) {
 			var response = results[0];
 			res.send(response);
 		}, function (error) {
 			res.send(error);
 		});
+	}, function (error) {
+		res.send(error);
 	});
 });
 
