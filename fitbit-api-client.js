@@ -26,15 +26,10 @@ FitbitApiClient.prototype = {
 		return deferred.promise;
 	},
 
-	requestResource: function (url, method, accessToken, accessTokenSecret, userId) {
+	requestResource: function (path, method, accessToken, accessTokenSecret, userId) {
+		var url = "https://api.fitbit.com/1/user/" + (userId || "-") + path;
 		var deferred = Q.defer();
-		this.oauth.getProtectedResource(
-			"https://api.fitbit.com/1/user/" + (userId || "-") + url,
-			method,
-			accessToken,
-			accessTokenSecret,
-			deferred.makeNodeResolver()
-		);
+		this.oauth.getProtectedResource(url, method, accessToken, accessTokenSecret, deferred.makeNodeResolver());
 		return deferred.promise;
 	}
 };
