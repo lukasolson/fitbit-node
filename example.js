@@ -13,7 +13,7 @@ app.get("/authorize", function (req, res) {
 		requestTokenSecrets[token] = secret;
 		res.redirect("http://www.fitbit.com/oauth/authorize?oauth_token=" + token);
 	}, function (error) {
-		console.log(error);
+		res.send(error);
 	});
 });
 
