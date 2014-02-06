@@ -25,11 +25,9 @@ app.get("YOUR_CALLBACK_URL", function (req, res) {
 		var accessToken = results[0],
 			accessTokenSecret = results[1],
 			userId = results[2].encoded_user_id;
-		client.requestResource("/profile.json", "GET", accessToken, accessTokenSecret).then(function (results) {
+		return client.requestResource("/profile.json", "GET", accessToken, accessTokenSecret).then(function (results) {
 			var response = results[0];
 			res.send(response);
-		}, function (error) {
-			res.send(error);
 		});
 	}, function (error) {
 		res.send(error);
