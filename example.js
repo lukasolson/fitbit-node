@@ -1,7 +1,7 @@
 var express = require("express"),
 	app = express();
 
-var FitbitApiClient = require("./fitbit-api-client"),
+var FitbitApiClient = require("fitbit-node"),
 	client = new FitbitApiClient("YOUR_CONSUMER_KEY", "YOUR_CONSUMER_SECRET");
 
 var requestTokenSecrets = {};
