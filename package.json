@@ -1,29 +1,29 @@
 {
-	"name": "fitbit-node",
-	"version": "0.1.0",
-	"description": "A Fitbit API client library written in Node.js.",
-	"main": "fitbit-api-client.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/lukasolson/fitbit-node"
-	},
-	"keywords": [
-		"Fitbit",
-		"Node"
-	],
-	"author": "Lukas Olson <olson.lukas@gmail.com>",
-	"license": "BSD",
-	"bugs": {
-		"url": "https://github.com/lukasolson/fitbit-node/issues"
-	},
-	"dependencies": {
-		"oauth": "~0.9.11",
-		"q": "~1.0.0"
-	},
-	"devDependencies": {
-		"express": "~3.4.8"
-	}
+  "name": "fitbit-node",
+  "version": "1.0.0",
+  "description": "A Fitbit API client library written in Node.js.",
+  "main": "fitbit-api-client.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukasolson/fitbit-node"
+  },
+  "keywords": [
+    "Fitbit",
+    "Node"
+  ],
+  "author": "Lukas Olson <olson.lukas@gmail.com>",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/lukasolson/fitbit-node/issues"
+  },
+  "dependencies": {
+    "bluebird": "^2.9.34",
+    "oauth": "^0.9.13"
+  },
+  "devDependencies": {
+    "express": "^4.13.1"
+  }
 }
