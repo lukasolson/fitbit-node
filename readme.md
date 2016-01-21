@@ -8,23 +8,26 @@ An API client library written for Fitbit in NodeJS.
 
 ## API
 
-#### `new FitbitApiClient(consumerKey, consumerSecret)`
-Constructor. Use the `consumerKey` and `consumerSecret` provided to you when you registered your app on [dev.fitbit.com](http://dev.fitbit.com/).
+#### `new FitbitApiClient(clientID, clientSecret)`
+Constructor. Use the `clientID` and `clientSecret` provided to you when you registered your app on [dev.fitbit.com](http://dev.fitbit.com/).
 
-#### `getRequestToken()`
-Get a request token. This is the first step of the OAuth flow. Returns a promise. When this promise is resolved with a request token, forward the user to the Fitbit site (e.g., http://www.fitbit.com/oauth/authorize?oauth_token=<requestToken>) for authentication. (You can substitute "authenticate" instead of "authorize" in the URL if you do not wish to forward to the Fitbit site for authentication next time you request an access token.)
+#### `getAuthorizeUrl(scope, redirectUrl)`
+Construct the authorization URL. This is the first step of the OAuth 2.0 flow. Returns a string. When this string containing the authorization URL on the Fitbit site is returned, redirect the user to that URL for authorization. The `scope` (a string of space-delimitted scope values you wish to obtain authorization for) and the `redirectUrl` (a string for the URL where you want Fitbit to redirect the user after authorization) are required. See the [Scope](https://dev.fitbit.com/docs/oauth2/#scope) section in Fitbit's API documentation for more details about possible scope values.
 
-#### `getAccessToken(requestToken, requestTokenSecret, verifier)`
-After the user authorizes with Fitbit, he/she will be forwarded to the URL you specify in your Fitbit API application settings, and the `requestToken` and `verifier` will be in the URL. Use these, along with the `requestTokenSecret` you received above to request an access token in order to make API calls. Returns a promise.
+#### `getAccessToken(code, redirectUrl)`
+After the user authorizes with Fitbit, he/she will be forwarded to the `redirectUrl` you specified when calling `getAuthorizationUrl()`, and the `code` will be present in the URL. Use this to exchange the authorization code for an access token in order to make API calls. Returns a promise.
 
-#### `get(url, accessToken, accessTokenSecret, [userId])`
+#### `refreshAccesstoken(refreshToken)`
+Refresh the user's access token, in the event that it has expired. The `refreshToken` would have been returned as `refresh_token` alongside the `access_token` by the `getAccessToken()` method. Returns a promise.
+
+#### `get(path, accessToken, [userId])`
 Make a GET API call to the Fitbit servers. (See [example.js](https://github.com/lukasolson/fitbit-node/blob/master/example.js) for an example.) Returns a promise.
 
-#### `post(url, accessToken, accessTokenSecret, data, [userId])`
+#### `post(path, accessToken, data, [userId])`
 Make a POST API call to the Fitbit servers. Returns a promise.
 
-#### `put(url, accessToken, accessTokenSecret, data, [userId])`
+#### `put(path, accessToken, data, [userId])`
 Make a PUT API call to the Fitbit servers. Returns a promise.
 
-#### `delete(url, accessToken, accessTokenSecret, [userId])`
+#### `delete(path, accessToken, [userId])`
 Make a DELETE API call to the Fitbit servers. Returns a promise.

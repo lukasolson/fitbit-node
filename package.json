@@ -1,6 +1,6 @@
 {
   "name": "fitbit-node",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A Fitbit API client library written in Node.js.",
   "main": "fitbit-api-client.js",
   "scripts": {
@@ -15,15 +15,16 @@
     "Node"
   ],
   "author": "Lukas Olson <olson.lukas@gmail.com>",
-  "license": "BSD",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/lukasolson/fitbit-node/issues"
   },
   "dependencies": {
-    "bluebird": "^2.9.34",
-    "oauth": "^0.9.13"
+    "simple-oauth2": "^0.4.0",
+    "q": "^1.4.1",
+    "request": "^2.67.0"
   },
   "devDependencies": {
-    "express": "^4.13.1"
+    "express": "^4.13.3"
   }
 }
