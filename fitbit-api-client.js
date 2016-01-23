@@ -66,7 +66,10 @@ FitbitApiClient.prototype = {
             if (error) {
                 deferred.reject(error);
             } else {
-                deferred.resolve(response);
+                deferred.resolve([
+                    body,
+                    response
+                ]);
             }
         });
         
@@ -88,7 +91,10 @@ FitbitApiClient.prototype = {
             if (error) {
                 deferred.reject(error);
             } else {
-                deferred.resolve(response);
+                deferred.resolve([
+                    body,
+                    response
+                ]);
             }
         });
         
@@ -110,7 +116,10 @@ FitbitApiClient.prototype = {
             if (error) {
                 deferred.reject(error);
             } else {
-                deferred.resolve(response);
+                deferred.resolve([
+                    body,
+                    response
+                ]);
             }
         });
         
@@ -131,7 +140,10 @@ FitbitApiClient.prototype = {
             if (error) {
                 deferred.reject(error);
             } else {
-                deferred.resolve(response);
+                deferred.resolve([
+                    body,
+                    response
+                ]);
             }
         });
         
