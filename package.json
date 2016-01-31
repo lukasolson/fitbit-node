@@ -20,11 +20,11 @@
     "url": "https://github.com/lukasolson/fitbit-node/issues"
   },
   "dependencies": {
-    "simple-oauth2": "^0.4.0",
+    "simple-oauth2": "^0.5.1",
     "q": "^1.4.1",
-    "request": "^2.67.0"
+    "request": "^2.69.0"
   },
   "devDependencies": {
-    "express": "^4.13.3"
+    "express": "^4.13.4"
   }
 }
