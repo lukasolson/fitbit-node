@@ -1,52 +1,164 @@
-var OAuth = require("oauth").OAuth,
-	Promise = require("bluebird");
+var OAuth2 = require('simple-oauth2'),
+    Q = require('q'),
+    Request = require('request');
 
-function FitbitApiClient(consumerKey, consumerSecret) {
-	this.oauth = new OAuth(
-		"https://api.fitbit.com/oauth/request_token",
-		"https://api.fitbit.com/oauth/access_token",
-		consumerKey,
-		consumerSecret,
-		"1.0",
-		null,
-		"HMAC-SHA1"
-	);
+function FitbitApiClient(clientID, clientSecret) {
+    this.oauth2 = OAuth2({
+        clientID: clientID,
+        clientSecret: clientSecret,
+        site: 'https://api.fitbit.com/', 
+        authorizationPath: 'oauth2/authorize',
+        tokenPath: 'oauth2/token',
+        useBasicAuthorizationHeader: true
+    });
 }
 
 FitbitApiClient.prototype = {
-	getRequestToken: function () {
-		var getRequestToken = Promise.promisify(this.oauth.getOAuthRequestToken, this.oauth);
-		return getRequestToken();
-	},
+    getAuthorizeUrl: function (scope, redirectUrl) {
+        return this.oauth2.authCode.authorizeURL({
+            scope: scope,
+            redirect_uri: redirectUrl
+        }).replace('api', 'www');
+    },
 
-	getAccessToken: function (requestToken, requestTokenSecret, verifier) {
-		var getAccessToken = Promise.promisify(this.oauth.getOAuthAccessToken, this.oauth);
-		return getAccessToken(requestToken, requestTokenSecret, verifier);
-	},
-	
-	get: function (path, accessToken, accessTokenSecret, userId) {
-		var getResource = Promise.promisify(this.oauth.get, this.oauth);
-		return getResource(getUrl(path, userId), accessToken, accessTokenSecret);
-	},
+    getAccessToken: function (code, redirectUrl) {
+        var deferred = Q.defer();
+          
+        this.oauth2.authCode.getToken({
+            code: code,
+            redirect_uri: redirectUrl
+        }, function (error, result) {
+            if (error) {
+                deferred.reject(error);
+            } else {
+                deferred.resolve(result);
+            }
+        });
+        
+        return deferred.promise;
+    },
+    
+    refreshAccesstoken: function (accessToken, refreshToken) {
+        var deferred = Q.defer();
+          
+        var token = this.oauth2.accessToken.create({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+            expires_in: -1
+        });
+          
+        token.refresh(function (error, result) {
+            if (error) {
+                deferred.reject(error);
+            } else {
+                deferred.resolve(result.token);
+            }
+        });
+        
+        return deferred.promise;
+    },
+    
+    get: function (path, accessToken, userId) {
+        var deferred = Q.defer();
+        
+        Request({
+            url: getUrl(path, userId), 
+            method: 'GET',
+            headers: {
+                Authorization: 'Bearer ' + accessToken
+            },
+            json: true
+        }, function(error, response, body) {
+            if (error) {
+                deferred.reject(error);
+            } else {
+                deferred.resolve([
+                    body,
+                    response
+                ]);
+            }
+        });
+        
+        return deferred.promise;
+    },
 
-	post: function (path, accessToken, accessTokenSecret, data, userId) {
-		var postResource = Promise.promisify(this.oauth.post, this.oauth);
-		return postResource(getUrl(path, userId), accessToken, accessTokenSecret, data);
-	},
+    post: function (path, accessToken, data, userId) {
+        var deferred = Q.defer();
+        
+        Request({
+            url: getUrl(path, userId), 
+            method: 'POST',
+            headers: {
+                Authorization: 'Bearer ' + accessToken
+            },
+            json: true,
+            body: data
+        }, function(error, response, body) {
+            if (error) {
+                deferred.reject(error);
+            } else {
+                deferred.resolve([
+                    body,
+                    response
+                ]);
+            }
+        });
+        
+        return deferred.promise;
+    },
 
-	put: function (path, accessToken, accessTokenSecret, data, userId) {
-		var putResource = Promise.promisify(this.oauth.put, this.oauth);
-		return putResource(getUrl(path, userId), accessToken, accessTokenSecret, data);
-	},
+    put: function (path, accessToken, data, userId) {
+        var deferred = Q.defer();
+        
+        Request({
+            url: getUrl(path, userId), 
+            method: 'PUT',
+            headers: {
+                Authorization: 'Bearer ' + accessToken
+            },
+            json: true,
+            body: data
+        }, function(error, response, body) {
+            if (error) {
+                deferred.reject(error);
+            } else {
+                deferred.resolve([
+                    body,
+                    response
+                ]);
+            }
+        });
+        
+         return deferred.promise;
+    },
 
-	delete: function (path, accessToken, accessTokenSecret, userId) {
-		var deleteResource = Promise.promisify(this.oauth.delete, this.oauth);
-		return deleteResource(getUrl(path, userId), accessToken, accessTokenSecret);
-	}
+    delete: function (path, accessToken, userId) {
+        var deferred = Q.defer();
+        
+        Request({
+            url: getUrl(path, userId), 
+            method: 'DELETE',
+            headers: {
+                Authorization: 'Bearer ' + accessToken
+            },
+            json: true
+        }, function(error, response, body) {
+            if (error) {
+                deferred.reject(error);
+            } else {
+                deferred.resolve([
+                    body,
+                    response
+                ]);
+            }
+        });
+        
+        return deferred.promise;
+    }
 };
 
 function getUrl(path, userId) {
-	return url = "https://api.fitbit.com/1/user/" + (userId || "-") + path;
+    return url = 'https://api.fitbit.com/1/user/' + (userId || '-') + path;
 }
 
 module.exports = FitbitApiClient;
