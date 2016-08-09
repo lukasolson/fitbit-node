@@ -38,13 +38,15 @@ FitbitApiClient.prototype = {
         return deferred.promise;
     },
     
-    refreshAccesstoken: function (accessToken, refreshToken) {
+    refreshAccesstoken: function (accessToken, refreshToken, expiresIn) {
+        if(expiresIn === undefined) expiresIn = -1;
+        
         var deferred = Q.defer();
           
         var token = this.oauth2.accessToken.create({
             access_token: accessToken,
             refresh_token: refreshToken,
-            expires_in: -1
+            expires_in: expiresIn
         });
           
         token.refresh(function (error, result) {
@@ -57,6 +59,10 @@ FitbitApiClient.prototype = {
         
         return deferred.promise;
     },
+    refreshAccessTokenForAYear: function(accessToken, refreshToken, expiresIn){
+      return refreshToken(accessToken, refreshToken, 31536000);
+    },
+
     
     get: function (path, accessToken, userId) {
         var deferred = Q.defer();
