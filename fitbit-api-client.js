@@ -6,7 +6,7 @@ function FitbitApiClient(clientID, clientSecret) {
     this.oauth2 = OAuth2({
         clientID: clientID,
         clientSecret: clientSecret,
-        site: 'https://api.fitbit.com/', 
+        site: 'https://api.fitbit.com/',
         authorizationPath: 'oauth2/authorize',
         tokenPath: 'oauth2/token',
         useBasicAuthorizationHeader: true
@@ -23,7 +23,7 @@ FitbitApiClient.prototype = {
 
     getAccessToken: function (code, redirectUrl) {
         var deferred = Q.defer();
-          
+
         this.oauth2.authCode.getToken({
             code: code,
             redirect_uri: redirectUrl
@@ -34,21 +34,21 @@ FitbitApiClient.prototype = {
                 deferred.resolve(result);
             }
         });
-        
+
         return deferred.promise;
     },
-    
+
     refreshAccesstoken: function (accessToken, refreshToken, expiresIn) {
         if(expiresIn === undefined) expiresIn = -1;
-        
+
         var deferred = Q.defer();
-          
+
         var token = this.oauth2.accessToken.create({
             access_token: accessToken,
             refresh_token: refreshToken,
             expires_in: expiresIn
         });
-          
+
         token.refresh(function (error, result) {
             if (error) {
                 deferred.reject(error);
@@ -56,19 +56,15 @@ FitbitApiClient.prototype = {
                 deferred.resolve(result.token);
             }
         });
-        
+
         return deferred.promise;
     },
-    refreshAccessTokenForAYear: function(accessToken, refreshToken, expiresIn){
-      return refreshToken(accessToken, refreshToken, 31536000);
-    },
 
-    
     get: function (path, accessToken, userId) {
         var deferred = Q.defer();
-        
+
         Request({
-            url: getUrl(path, userId), 
+            url: getUrl(path, userId),
             method: 'GET',
             headers: {
                 Authorization: 'Bearer ' + accessToken
@@ -84,15 +80,15 @@ FitbitApiClient.prototype = {
                 ]);
             }
         });
-        
+
         return deferred.promise;
     },
 
     post: function (path, accessToken, data, userId) {
         var deferred = Q.defer();
-        
+
         Request({
-            url: getUrl(path, userId), 
+            url: getUrl(path, userId),
             method: 'POST',
             headers: {
                 Authorization: 'Bearer ' + accessToken
@@ -109,15 +105,15 @@ FitbitApiClient.prototype = {
                 ]);
             }
         });
-        
+
         return deferred.promise;
     },
 
     put: function (path, accessToken, data, userId) {
         var deferred = Q.defer();
-        
+
         Request({
-            url: getUrl(path, userId), 
+            url: getUrl(path, userId),
             method: 'PUT',
             headers: {
                 Authorization: 'Bearer ' + accessToken
@@ -134,15 +130,15 @@ FitbitApiClient.prototype = {
                 ]);
             }
         });
-        
+
          return deferred.promise;
     },
 
     delete: function (path, accessToken, userId) {
         var deferred = Q.defer();
-        
+
         Request({
-            url: getUrl(path, userId), 
+            url: getUrl(path, userId),
             method: 'DELETE',
             headers: {
                 Authorization: 'Bearer ' + accessToken
@@ -158,13 +154,13 @@ FitbitApiClient.prototype = {
                 ]);
             }
         });
-        
+
         return deferred.promise;
     }
 };
 
 function getUrl(path, userId) {
-    return url = 'https://api.fitbit.com/1/user/' + (userId || '-') + path;
+    return path = 'https://api.fitbit.com/1/user/' + (userId || '-') + path;
 }
 
 module.exports = FitbitApiClient;
