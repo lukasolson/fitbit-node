@@ -94,7 +94,7 @@ FitbitApiClient.prototype = {
                 Authorization: 'Bearer ' + accessToken
             },
             json: true,
-            body: data
+            form: data
         }, function(error, response, body) {
             if (error) {
                 deferred.reject(error);
@@ -119,7 +119,7 @@ FitbitApiClient.prototype = {
                 Authorization: 'Bearer ' + accessToken
             },
             json: true,
-            body: data
+            form: data
         }, function(error, response, body) {
             if (error) {
                 deferred.reject(error);
