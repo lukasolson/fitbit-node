@@ -9,6 +9,7 @@ function FitbitApiClient(clientID, clientSecret) {
         site: 'https://api.fitbit.com/',
         authorizationPath: 'oauth2/authorize',
         tokenPath: 'oauth2/token',
+        revocationPath: 'oauth2/revoke',
         useBasicAuthorizationHeader: true
     });
 }
@@ -59,6 +60,29 @@ FitbitApiClient.prototype = {
 
         return deferred.promise;
     },
+
+
+    revokeAccessToken: function (accessToken) {
+
+        var deferred = Q.defer();
+
+        var token = this.oauth2.accessToken.create({
+            access_token: accessToken,
+            refresh_token: '',
+            expires_in: ''
+        });
+
+        token.revoke('access_token', function (error, result) {
+            if (error) {
+                deferred.reject(error);
+            } else {
+                deferred.resolve(result);
+            }
+        });
+
+        return deferred.promise;
+    },
+
 
     get: function (path, accessToken, userId) {
         var deferred = Q.defer();
