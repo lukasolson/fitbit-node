@@ -62,7 +62,7 @@ FitbitApiClient.prototype = {
     },
 
 
-    revokeAccessToken: function (accessToken, reportInvalidToken) {
+    revokeAccessToken: function (accessToken) {
 
         var deferred = Q.defer();
 
