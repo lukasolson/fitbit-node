@@ -63,7 +63,6 @@ FitbitApiClient.prototype = {
 
 
     revokeAccessToken: function (accessToken) {
-
         var deferred = Q.defer();
 
         var token = this.oauth2.accessToken.create({
