@@ -83,6 +83,20 @@ FitbitApiClient.prototype = {
         return deferred.promise;
     },
 
+    addSubscription: function (accessToken, collectionPath, subscriptionId, subscriberId) {
+      var extraHeaders = null;
+      if (subscriberId) {
+        extraHeaders = { 'X-Fitbit-Subscriber-Id': subscriberId };
+      }
+
+      var path = "/" +
+        encodeURIComponent(collectionPath) +
+        "/apiSubscriptions/" +
+        encodeURIComponent(subscriptionId) +
+        ".json";
+
+      return this.post(path, accessToken, null, null, extraHeaders);
+    },
 
     get: function (path, accessToken, userId) {
         var deferred = Q.defer();
@@ -108,15 +122,23 @@ FitbitApiClient.prototype = {
         return deferred.promise;
     },
 
-    post: function (path, accessToken, data, userId) {
+    post: function (path, accessToken, data, userId, extraHeaders) {
         var deferred = Q.defer();
+
+        var headers = {
+            Authorization: 'Bearer ' + accessToken
+        };
+
+        if (extraHeaders) {
+          for (var attrname in extraHeaders) {
+            headers[attrname] = extraHeaders[attrname];
+          }
+        }
 
         Request({
             url: getUrl(path, userId),
             method: 'POST',
-            headers: {
-                Authorization: 'Bearer ' + accessToken
-            },
+            headers: headers,
             json: true,
             form: data
         }, function(error, response, body) {
