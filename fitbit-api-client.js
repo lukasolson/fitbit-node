@@ -61,7 +61,6 @@ FitbitApiClient.prototype = {
         return deferred.promise;
     },
 
-
     revokeAccessToken: function (accessToken) {
 
         var deferred = Q.defer();
@@ -83,30 +82,14 @@ FitbitApiClient.prototype = {
         return deferred.promise;
     },
 
-    addSubscription: function (accessToken, collectionPath, subscriptionId, subscriberId) {
-      var extraHeaders = null;
-      if (subscriberId) {
-        extraHeaders = { 'X-Fitbit-Subscriber-Id': subscriberId };
-      }
-
-      var path = "/" +
-        encodeURIComponent(collectionPath) +
-        "/apiSubscriptions/" +
-        encodeURIComponent(subscriptionId) +
-        ".json";
-
-      return this.post(path, accessToken, null, null, extraHeaders);
-    },
-
-    get: function (path, accessToken, userId) {
+    // extraHeaders is optional
+    get: function (path, accessToken, userId, extraHeaders) {
         var deferred = Q.defer();
 
         Request({
             url: getUrl(path, userId),
             method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + accessToken
-            },
+            headers: mergeHeaders(accessToken, extraHeaders),
             json: true
         }, function(error, response, body) {
             if (error) {
@@ -122,23 +105,14 @@ FitbitApiClient.prototype = {
         return deferred.promise;
     },
 
+    // extraHeaders is optional
     post: function (path, accessToken, data, userId, extraHeaders) {
         var deferred = Q.defer();
-
-        var headers = {
-            Authorization: 'Bearer ' + accessToken
-        };
-
-        if (extraHeaders) {
-          for (var attrname in extraHeaders) {
-            headers[attrname] = extraHeaders[attrname];
-          }
-        }
 
         Request({
             url: getUrl(path, userId),
             method: 'POST',
-            headers: headers,
+            headers: mergeHeaders(accessToken, extraHeaders),
             json: true,
             form: data
         }, function(error, response, body) {
@@ -155,15 +129,14 @@ FitbitApiClient.prototype = {
         return deferred.promise;
     },
 
-    put: function (path, accessToken, data, userId) {
+    // extraHeaders is optional
+    put: function (path, accessToken, data, userId, extraHeaders) {
         var deferred = Q.defer();
 
         Request({
             url: getUrl(path, userId),
             method: 'PUT',
-            headers: {
-                Authorization: 'Bearer ' + accessToken
-            },
+            headers: mergeHeaders(accessToken, extraHeaders),
             json: true,
             form: data
         }, function(error, response, body) {
@@ -180,15 +153,14 @@ FitbitApiClient.prototype = {
          return deferred.promise;
     },
 
-    delete: function (path, accessToken, userId) {
+    // extraHeaders is optional
+    delete: function (path, accessToken, userId, extraHeaders) {
         var deferred = Q.defer();
 
         Request({
             url: getUrl(path, userId),
             method: 'DELETE',
-            headers: {
-                Authorization: 'Bearer ' + accessToken
-            },
+            headers: mergeHeaders(accessToken, extraHeaders),
             json: true
         }, function(error, response, body) {
             if (error) {
@@ -207,6 +179,20 @@ FitbitApiClient.prototype = {
 
 function getUrl(path, userId) {
     return path = 'https://api.fitbit.com/1/user/' + (userId || '-') + path;
+}
+
+function mergeHeaders(accessToken, extraHeaders) {
+    var headers = {
+        Authorization: 'Bearer ' + accessToken
+    };
+
+    if (typeof extraHeaders !== "undefined" && extraHeaders) {
+      for (var attrname in extraHeaders) {
+        headers[attrname] = extraHeaders[attrname];
+      }
+    }
+
+    return headers;
 }
 
 module.exports = FitbitApiClient;
