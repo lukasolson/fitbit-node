@@ -39,7 +39,7 @@ FitbitApiClient.prototype = {
         return deferred.promise;
     },
 
-    refreshAccesstoken: function (accessToken, refreshToken, expiresIn) {
+    refreshAccessToken: function (accessToken, refreshToken, expiresIn) {
         if(expiresIn === undefined) expiresIn = -1;
 
         var deferred = Q.defer();
