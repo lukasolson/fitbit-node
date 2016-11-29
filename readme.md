@@ -11,8 +11,8 @@ An API client library for Fitbit written in Node.js.
 #### `new FitbitApiClient(clientID, clientSecret)`
 Constructor. Use the `clientID` and `clientSecret` provided to you when you registered your application on [dev.fitbit.com](http://dev.fitbit.com/).
 
-#### `getAuthorizeUrl(scope, redirectUrl)`
-Construct the authorization URL. This is the first step of the OAuth 2.0 flow. Returns a string. When this string containing the authorization URL on the Fitbit site is returned, redirect the user to that URL for authorization. The `scope` (a string of space-delimitted scope values you wish to obtain authorization for) and the `redirectUrl` (a string for the URL where you want Fitbit to redirect the user after authorization) are required. See the [Scope](https://dev.fitbit.com/docs/oauth2/#scope) section in Fitbit's API documentation for more details about possible scope values.
+#### `getAuthorizeUrl(scope, redirectUrl, [prompt], [state])`
+Construct the authorization URL. This is the first step of the OAuth 2.0 flow. Returns a string. When this string containing the authorization URL on the Fitbit site is returned, redirect the user to that URL for authorization. The `scope` (a string of space-delimitted scope values you wish to obtain authorization for) and the `redirectUrl` (a string for the URL where you want Fitbit to redirect the user after authorization) are required. See the [Scope](https://dev.fitbit.com/docs/oauth2/#scope) section in Fitbit's API documentation for more details about possible scope values. See the [Authorization Page](https://dev.fitbit.com/docs/oauth2/#authorization-page) section in Fitbit's API documentation for more details about possible `prompt` and `state` values. 
 
 #### `getAccessToken(code, redirectUrl)`
 After the user authorizes your application with Fitbit, they will be forwarded to the `redirectUrl` you specified when calling `getAuthorizationUrl()`, and the `code` will be present in the URL. Use this to exchange the authorization code for an access token in order to make API calls. Returns a promise.
