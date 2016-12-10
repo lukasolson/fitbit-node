@@ -15,10 +15,12 @@ function FitbitApiClient(clientID, clientSecret) {
 }
 
 FitbitApiClient.prototype = {
-    getAuthorizeUrl: function (scope, redirectUrl) {
+    getAuthorizeUrl: function (scope, redirectUrl, prompt, state) {
         return this.oauth2.authCode.authorizeURL({
             scope: scope,
-            redirect_uri: redirectUrl
+            redirect_uri: redirectUrl,
+            prompt: prompt, 
+            state: state
         }).replace('api', 'www');
     },
 
