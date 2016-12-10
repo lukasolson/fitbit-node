@@ -23,14 +23,20 @@ Refresh the user's access token, in the event that it has expired. The `accessTo
 #### `revokeAccessToken(accessToken)`
 Revoke the user's access token. The `accessToken` to be revoked is required. Returns a promise.
 
-#### `get(path, accessToken, [userId])`
+#### `get(path, accessToken, [userId], [extraHeaders])`
 Make a GET API call to the Fitbit servers. (See [example.js](https://github.com/lukasolson/fitbit-node/blob/master/example.js) for an example.) Returns a promise.
 
-#### `post(path, accessToken, data, [userId])`
+#### `post(path, accessToken, data, [userId], [extraHeaders])`
 Make a POST API call to the Fitbit servers. Returns a promise.
 
-#### `put(path, accessToken, data, [userId])`
+#### `put(path, accessToken, data, [userId], [extraHeaders])`
 Make a PUT API call to the Fitbit servers. Returns a promise.
 
-#### `delete(path, accessToken, [userId])`
+#### `delete(path, accessToken, [userId], [extraHeaders])`
 Make a DELETE API call to the Fitbit servers. Returns a promise.
+
+## Custom HTTP Headers
+
+Some Fitbit API calls (such as [adding subscriptions](https://dev.fitbit.com/docs/subscriptions/#adding-a-subscription)) accept an optional HTTP header.  The `get`, `post`, `put`, and `delete` functions accept an optional parameter with an object with HTTP headers to handle these kind of calls (`extraHeaders` above).  The default `Authorization` header is merged with the provided parameter, if it exists.
+
+
