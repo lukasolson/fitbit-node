@@ -84,11 +84,11 @@ FitbitApiClient.prototype = {
     },
 
     // extraHeaders is optional
-    get: function (path, accessToken, userId, extraHeaders) {
+    get: function (apiVersion, path, accessToken, userId, extraHeaders) {
         var deferred = Q.defer();
 
         Request({
-            url: getUrl(path, userId),
+            url: getUrl(apiVersion, path, userId),
             method: 'GET',
             headers: mergeHeaders(accessToken, extraHeaders),
             json: true
@@ -107,11 +107,11 @@ FitbitApiClient.prototype = {
     },
 
     // extraHeaders is optional
-    post: function (path, accessToken, data, userId, extraHeaders) {
+    post: function (apiVersion, path, accessToken, data, userId, extraHeaders) {
         var deferred = Q.defer();
 
         Request({
-            url: getUrl(path, userId),
+            url: getUrl(apiVersion, path, userId),
             method: 'POST',
             headers: mergeHeaders(accessToken, extraHeaders),
             json: true,
@@ -131,11 +131,11 @@ FitbitApiClient.prototype = {
     },
 
     // extraHeaders is optional
-    put: function (path, accessToken, data, userId, extraHeaders) {
+    put: function (apiVersion, path, accessToken, data, userId, extraHeaders) {
         var deferred = Q.defer();
 
         Request({
-            url: getUrl(path, userId),
+            url: getUrl(apiVersion, path, userId),
             method: 'PUT',
             headers: mergeHeaders(accessToken, extraHeaders),
             json: true,
@@ -155,11 +155,11 @@ FitbitApiClient.prototype = {
     },
 
     // extraHeaders is optional
-    delete: function (path, accessToken, userId, extraHeaders) {
+    delete: function (apiVersion, path, accessToken, userId, extraHeaders) {
         var deferred = Q.defer();
 
         Request({
-            url: getUrl(path, userId),
+            url: getUrl(apiVersion, path, userId),
             method: 'DELETE',
             headers: mergeHeaders(accessToken, extraHeaders),
             json: true
@@ -178,8 +178,8 @@ FitbitApiClient.prototype = {
     }
 };
 
-function getUrl(path, userId) {
-    return path = 'https://api.fitbit.com/1/user/' + (userId || '-') + path;
+function getUrl(apiVersion, path, userId) {
+    return path = 'https://api.fitbit.com/' + apiVersion + '/user/' + (userId || '-') + path;
 }
 
 function mergeHeaders(accessToken, extraHeaders) {
