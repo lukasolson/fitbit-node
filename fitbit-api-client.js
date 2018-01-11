@@ -3,20 +3,26 @@ var OAuth2 = require('simple-oauth2'),
     Request = require('request');
 
 function FitbitApiClient(clientID, clientSecret) {
-    this.oauth2 = OAuth2({
-        clientID: clientID,
-        clientSecret: clientSecret,
-        site: 'https://api.fitbit.com/',
-        authorizationPath: 'oauth2/authorize',
-        tokenPath: 'oauth2/token',
-        revocationPath: 'oauth2/revoke',
-        useBasicAuthorizationHeader: true
+    this.oauth2 = OAuth2.create({//new way to create oauth obj
+        client: {
+            id: clientID,
+            secret: clientSecret
+          },
+          auth: {
+            tokenHost: 'https://api.fitbit.com/',
+            tokenPath: 'oauth2/token',
+            authorizePath: 'oauth2/authorize',
+            revokePath:'oauth2/revoke'
+          },
+          options:{
+              useBasicAuthorizationHeader:true
+          }
     });
 }
 
 FitbitApiClient.prototype = {
     getAuthorizeUrl: function (scope, redirectUrl, prompt, state) {
-        return this.oauth2.authCode.authorizeURL({
+        return this.oauth2.authorizationCode.authorizeURL({
             scope: scope,
             redirect_uri: redirectUrl,
             prompt: prompt, 
@@ -27,7 +33,7 @@ FitbitApiClient.prototype = {
     getAccessToken: function (code, redirectUrl) {
         var deferred = Q.defer();
 
-        this.oauth2.authCode.getToken({
+        this.oauth2.authorizationCode.getToken({
             code: code,
             redirect_uri: redirectUrl
         }, function (error, result) {
@@ -38,6 +44,29 @@ FitbitApiClient.prototype = {
             }
         });
 
+        return deferred.promise;
+    },
+
+    AccessTokenStatus: function(accessToken){
+        var deferred = Q.defer();
+        
+        Request({
+            url: 'https://api.fitbit.com/oauth2/introspect', 
+            method: 'POST',
+            headers: {
+                Authorization: 'Bearer ' + accessToken,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            json: true,
+            body:"token=" + accessToken
+        }, function(error, response, body) {
+            if (error) {
+                deferred.reject(error);
+            } else {
+                deferred.resolve(body);
+            }
+        });
+        
         return deferred.promise;
     },
 

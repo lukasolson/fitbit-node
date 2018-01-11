@@ -25,5 +25,15 @@ app.get("/callback", function (req, res) {
     });
 });
 
+app.get("/tokenStatus", function(req, res){
+    client.AccessTokenStatus(req.body.token)
+    .then(function(result){
+        res.send(result[0]);
+    })
+    .catch(function (error) {
+        res.send(error);
+    });
+});
+
 // launch the server
 app.listen(3000);
