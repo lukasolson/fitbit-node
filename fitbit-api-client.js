@@ -41,6 +41,29 @@ FitbitApiClient.prototype = {
         return deferred.promise;
     },
 
+    AccessTokenStatus: function(accessToken){
+        var deferred = Q.defer();
+        
+        Request({
+            url: 'https://api.fitbit.com/oauth2/introspect', 
+            method: 'POST',
+            headers: {
+                Authorization: 'Bearer ' + accessToken,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            json: true,
+            body:"token=" + accessToken
+        }, function(error, response, body) {
+            if (error) {
+                deferred.reject(error);
+            } else {
+                deferred.resolve(body);
+            }
+        });
+        
+        return deferred.promise;
+    },
+
     refreshAccessToken: function (accessToken, refreshToken, expiresIn) {
         if(expiresIn === undefined) expiresIn = -1;
 
