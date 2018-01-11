@@ -4,7 +4,7 @@ var express = require("express"),
 
 // initialize the Fitbit API client
 var FitbitApiClient = require("fitbit-node"),
-    client = new FitbitApiClient(process.env.FITBIT_CONSUMER_KEY, process.env.FITBIT_CONSUMER_SECRET);
+    client = new FitbitApiClient("YOUR_CLIENT_ID", "YOUR_CLIENT_SECRET");
 
 // redirect the user to the Fitbit authorization page
 app.get("/authorize", function (req, res) {
@@ -13,7 +13,7 @@ app.get("/authorize", function (req, res) {
 });
 
 // handle the callback from the Fitbit authorization flow
-app.get("/fitbit/authcallback", function (req, res) {
+app.get("/callback", function (req, res) {
     // exchange the authorization code we just received for an access token
     client.getAccessToken(req.query.code, 'YOUR_CALLBACK_URL').then(function (result) {
         // use the access token to fetch the user's profile information
