@@ -3,7 +3,7 @@ var OAuth2 = require('simple-oauth2'),
     Request = require('request');
 
 function FitbitApiClient(clientID, clientSecret) {
-    this.oauth2 = OAuth2.create({//new way to create oauth obj
+    this.oauth2 = OAuth2.create({
         client: {
             id: clientID,
             secret: clientSecret

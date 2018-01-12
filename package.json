@@ -1,6 +1,6 @@
 {
     "name": "fitbit-node",
-    "version": "2.0.5",
+    "version": "2.0.6",
     "description": "An API client library for Fitbit written in Node.js.",
     "main": "fitbit-api-client.js",
     "scripts": {
