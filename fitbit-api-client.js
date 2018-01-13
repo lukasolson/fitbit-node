@@ -1,199 +1,184 @@
-var OAuth2 = require('simple-oauth2'),
-    Q = require('q'),
-    Request = require('request');
+'use strict';
+const OAuth2 = require('simple-oauth2').create;
+const Request = require('request');
 
-function FitbitApiClient(clientID, clientSecret) {
-    this.oauth2 = OAuth2({
-        clientID: clientID,
-        clientSecret: clientSecret,
-        site: 'https://api.fitbit.com/',
-        authorizationPath: 'oauth2/authorize',
-        tokenPath: 'oauth2/token',
-        revocationPath: 'oauth2/revoke',
-        useBasicAuthorizationHeader: true
-    });
-}
+module.exports = class FitbitApiClient {
+	constructor({clientId, clientSecret, apiVersion = '1.2'}) {
+		this.apiVersion = apiVersion;
+		this.oauth2 = OAuth2({
+			client: {
+				id: clientId,
+				secret: clientSecret
+			},
+			auth: {
+				tokenHost: 'https://api.fitbit.com/',
+				tokenPath: 'oauth2/token',
+				revokePath: 'oauth2/revoke',
+				authorizeHost: 'https://api.fitbit.com/',
+				authorizePath: 'oauth2/authorize'
+			},
+			options: {
+				useBasicAuthorizationHeader: true
+			}
+		});
+	}
 
-FitbitApiClient.prototype = {
-    getAuthorizeUrl: function (scope, redirectUrl, prompt, state) {
-        return this.oauth2.authCode.authorizeURL({
-            scope: scope,
-            redirect_uri: redirectUrl,
-            prompt: prompt, 
-            state: state
-        }).replace('api', 'www');
-    },
+	getUrl(path, userId){
+		return `https://api.fitbit.com/${this.apiVersion}/user/${userId || '-'}${path}`;
+	}
 
-    getAccessToken: function (code, redirectUrl) {
-        var deferred = Q.defer();
+	mergeHeaders(accessToken, extraHeaders) {
+		const headers = {
+			Authorization: 'Bearer ' + accessToken
+		};
+		if (typeof extraHeaders !== "undefined" && extraHeaders) {
+			for (let attr in extraHeaders) {
+				if (extraHeaders.hasOwnProperty(attr)) {
+					headers[attr] = extraHeaders[attr];
+				}
+			}
+		}
+		return headers;
+	}
 
-        this.oauth2.authCode.getToken({
-            code: code,
-            redirect_uri: redirectUrl
-        }, function (error, result) {
-            if (error) {
-                deferred.reject(error);
-            } else {
-                deferred.resolve(result);
-            }
-        });
+	getAuthorizeUrl(scope, redirectUrl, prompt, state) {
+		return this.oauth2.authorizationCode.authorizeURL({
+			scope: scope,
+			redirect_uri: redirectUrl,
+			prompt: prompt,
+			state: state
+		}).replace('api', 'www');
+	}
 
-        return deferred.promise;
-    },
+	getAccessToken(code, redirectUrl) {
+		return new Promise((resolve, reject) => {
+			this.oauth2.authorizationCode.getToken({
+				code: code,
+				redirect_uri: redirectUrl
+			}, (error, result) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(result);
+				}
+			});
+		});
+	}
 
-    refreshAccessToken: function (accessToken, refreshToken, expiresIn) {
-        if(expiresIn === undefined) expiresIn = -1;
+	refreshAccessToken(accessToken, refreshToken, expiresIn) {
+		return new Promise((resolve, reject) => {
+			if (expiresIn === undefined) expiresIn = -1;
+			const token = this.oauth2.accessToken.create({
+				access_token: accessToken,
+				refresh_token: refreshToken,
+				expires_in: expiresIn
+			});
+			token.refresh((error, result) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(result.token);
+				}
+			});
+		});
+	}
 
-        var deferred = Q.defer();
+	revokeAccessToken(accessToken) {
+		return new Promise((resolve, reject) => {
+			const token = this.oauth2.accessToken.create({
+				access_token: accessToken,
+				refresh_token: '',
+				expires_in: ''
+			});
+			token.revoke('access_token', (error, result) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(result);
+				}
+			});
+		});
+	}
 
-        var token = this.oauth2.accessToken.create({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-            expires_in: expiresIn
-        });
+	get(path, accessToken, userId, extraHeaders) {
+		return new Promise((resolve, reject) => {
+			Request({
+				url: this.getUrl(path, userId),
+				method: 'GET',
+				headers: this.mergeHeaders(accessToken, extraHeaders),
+				json: true
+			}, (error, response, body) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve([
+						body,
+						response
+					]);
+				}
+			});
+		});
+	}
 
-        token.refresh(function (error, result) {
-            if (error) {
-                deferred.reject(error);
-            } else {
-                deferred.resolve(result.token);
-            }
-        });
+	post(path, accessToken, data, userId, extraHeaders) {
+		return new Promise((resolve, reject) => {
+			Request({
+				url: this.getUrl(path, userId),
+				method: 'POST',
+				headers: this.mergeHeaders(accessToken, extraHeaders),
+				json: true,
+				form: data
+			}, (error, response, body) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve([
+						body,
+						response
+					]);
+				}
+			});
+		});
+	}
 
-        return deferred.promise;
-    },
+	put(path, accessToken, data, userId, extraHeaders) {
+		return new Promise((resolve, reject) => {
+			Request({
+				url: this.getUrl(path, userId),
+				method: 'PUT',
+				headers: this.mergeHeaders(accessToken, extraHeaders),
+				json: true,
+				form: data
+			}, (error, response, body) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve([
+						body,
+						response
+					]);
+				}
+			});
+		});
+	}
 
-    revokeAccessToken: function (accessToken) {
-        var deferred = Q.defer();
-
-        var token = this.oauth2.accessToken.create({
-            access_token: accessToken,
-            refresh_token: '',
-            expires_in: ''
-        });
-
-        token.revoke('access_token', function (error, result) {
-            if (error) {
-                deferred.reject(error);
-            } else {
-                deferred.resolve(result);
-            }
-        });
-
-        return deferred.promise;
-    },
-
-    // extraHeaders is optional
-    get: function (path, accessToken, userId, extraHeaders) {
-        var deferred = Q.defer();
-
-        Request({
-            url: getUrl(path, userId),
-            method: 'GET',
-            headers: mergeHeaders(accessToken, extraHeaders),
-            json: true
-        }, function(error, response, body) {
-            if (error) {
-                deferred.reject(error);
-            } else {
-                deferred.resolve([
-                    body,
-                    response
-                ]);
-            }
-        });
-
-        return deferred.promise;
-    },
-
-    // extraHeaders is optional
-    post: function (path, accessToken, data, userId, extraHeaders) {
-        var deferred = Q.defer();
-
-        Request({
-            url: getUrl(path, userId),
-            method: 'POST',
-            headers: mergeHeaders(accessToken, extraHeaders),
-            json: true,
-            form: data
-        }, function(error, response, body) {
-            if (error) {
-                deferred.reject(error);
-            } else {
-                deferred.resolve([
-                    body,
-                    response
-                ]);
-            }
-        });
-
-        return deferred.promise;
-    },
-
-    // extraHeaders is optional
-    put: function (path, accessToken, data, userId, extraHeaders) {
-        var deferred = Q.defer();
-
-        Request({
-            url: getUrl(path, userId),
-            method: 'PUT',
-            headers: mergeHeaders(accessToken, extraHeaders),
-            json: true,
-            form: data
-        }, function(error, response, body) {
-            if (error) {
-                deferred.reject(error);
-            } else {
-                deferred.resolve([
-                    body,
-                    response
-                ]);
-            }
-        });
-
-         return deferred.promise;
-    },
-
-    // extraHeaders is optional
-    delete: function (path, accessToken, userId, extraHeaders) {
-        var deferred = Q.defer();
-
-        Request({
-            url: getUrl(path, userId),
-            method: 'DELETE',
-            headers: mergeHeaders(accessToken, extraHeaders),
-            json: true
-        }, function(error, response, body) {
-            if (error) {
-                deferred.reject(error);
-            } else {
-                deferred.resolve([
-                    body,
-                    response
-                ]);
-            }
-        });
-
-        return deferred.promise;
-    }
+	delete(path, accessToken, userId, extraHeaders) {
+		return new Promise((resolve, reject) => {
+			Request({
+				url: this.getUrl(path, userId),
+				method: 'DELETE',
+				headers: this.mergeHeaders(accessToken, extraHeaders),
+				json: true
+			}, (error, response, body) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve([
+						body,
+						response
+					]);
+				}
+			});
+		});
+	}
 };
-
-function getUrl(path, userId) {
-    return path = 'https://api.fitbit.com/1/user/' + (userId || '-') + path;
-}
-
-function mergeHeaders(accessToken, extraHeaders) {
-    var headers = {
-        Authorization: 'Bearer ' + accessToken
-    };
-
-    if (typeof extraHeaders !== "undefined" && extraHeaders) {
-      for (var attrname in extraHeaders) {
-        headers[attrname] = extraHeaders[attrname];
-      }
-    }
-
-    return headers;
-}
-
-module.exports = FitbitApiClient;
