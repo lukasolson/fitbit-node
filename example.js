@@ -23,8 +23,12 @@ app.get("/callback", (req, res) => {
 		// use the access token to fetch the user's profile information
 		client.get("/profile.json", result.access_token).then(results => {
 			res.send(results[0]);
+		}).catch(err => {
+			res.status(err.status).send(err);
 		});
-	}).catch(res.send);
+	}).catch(err => {
+		res.status(err.status).send(err);
+	});
 });
 
 // launch the server
