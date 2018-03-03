@@ -24,7 +24,8 @@ module.exports = class FitbitApiClient {
 	}
 
 	getUrl(path, userId){
-		return `https://api.fitbit.com/${this.apiVersion}/user/${userId || '-'}${path}`;
+		let userSubPath = userId === false ? '' : `/user/${userId || '-'}`;
+		return `https://api.fitbit.com/${this.apiVersion}${userSubPath}${path}`;
 	}
 
 	mergeHeaders(accessToken, extraHeaders) {
