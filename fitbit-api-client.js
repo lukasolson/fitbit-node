@@ -25,7 +25,7 @@ module.exports = class FitbitApiClient {
 
 	getUrl(path, userId){
 		let userSubPath = userId === false ? '' : `/user/${userId || '-'}`;
-		return `https://api.fitbit.com/${this.apiVersion}${userSubPath}${path}`;
+		return `https://api.fitbit.com/${this.apiVersion}${userSubPath}${path}`;	
 	}
 
 	mergeHeaders(accessToken, extraHeaders) {
@@ -79,6 +79,27 @@ module.exports = class FitbitApiClient {
 					reject(error);
 				} else {
 					resolve(result.token);
+				}
+			});
+		});
+	}
+
+	introspectAccessToken(accessToken) {
+		return new Promise((resolve, reject) => {
+			Request({
+				url: `https://api.fitbit.com/${this.apiVersion}/oauth2/introspect`,
+				method: 'POST',
+				headers: this.mergeHeaders(accessToken, {}),
+				json: true,
+				form: {"token":accessToken}
+			}, (error, response, body) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve([
+						body,
+						response
+					]);
 				}
 			});
 		});
