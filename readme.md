@@ -8,8 +8,9 @@ An API client library for Fitbit written in Node.js.
 
 ## API
 
-#### `new FitbitApiClient(clientID, clientSecret)`
-Constructor. Use the `clientID` and `clientSecret` provided to you when you registered your application on [dev.fitbit.com](http://dev.fitbit.com/).
+#### `new FitbitApiClient({clientId: "YOUR_CLIENT_ID", clientSecret: "YOUR_CLIENT_SECRET", apiVersion: "1.2"})`
+Constructor. Use the `clientId` and `clientSecret` provided to you when you registered your application on [dev.fitbit.com](http://dev.fitbit.com/).
+The `apiVersion` is by default 1.2
 
 #### `getAuthorizeUrl(scope, redirectUrl, [prompt], [state])`
 Construct the authorization URL. This is the first step of the OAuth 2.0 flow. Returns a string. When this string containing the authorization URL on the Fitbit site is returned, redirect the user to that URL for authorization. The `scope` (a string of space-delimitted scope values you wish to obtain authorization for) and the `redirectUrl` (a string for the URL where you want Fitbit to redirect the user after authorization) are required. See the [Scope](https://dev.fitbit.com/docs/oauth2/#scope) section in Fitbit's API documentation for more details about possible scope values. See the [Authorization Page](https://dev.fitbit.com/docs/oauth2/#authorization-page) section in Fitbit's API documentation for more details about possible `prompt` and `state` values. 
