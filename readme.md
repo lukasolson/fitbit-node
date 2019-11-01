@@ -21,6 +21,10 @@ After the user authorizes your application with Fitbit, they will be forwarded t
 #### `refreshAccessToken(accessToken, refreshToken, [expiresIn])`
 Refresh the user's access token, in the event that it has expired. The `accessToken` and `refreshToken` (returned as `refresh_token` alongside the `access_token` by the `getAccessToken()` method) are required. The `expiresIn` parameter specifies the new desired access token lifetime in seconds. Returns a promise.
 
+#### `AccessTokenStatus(accessToken)`
+Check the status of `accessToken` that is passed in. When active = 1 response body looks like { active: 1, scope: '{HEARTRATE=READ, SETTINGS=READ, PROFILE=READ, SOCIAL=READ, NUTRITION=READ, ACTIVITY=READ, SLEEP=READ, WEIGHT=READ, LOCATION=READ}',
+  clientId: { id: <clientId> }, userId: { id: <userId> }, tokenType: 'access_token', exp: 28798, iat: 1515628997000 }. When Active = 0, Response body looks like { active: 0 }.(See [example.js](https://github.com/nurseymybush/fitbit-node/blob/master/example.js). Returns a promise.
+
 #### `revokeAccessToken(accessToken)`
 Revoke the user's access token. The `accessToken` to be revoked is required. Returns a promise.
 
